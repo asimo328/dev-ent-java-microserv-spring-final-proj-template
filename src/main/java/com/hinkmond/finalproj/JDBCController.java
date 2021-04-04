@@ -10,45 +10,46 @@ public class JDBCController {
     private final static String KEYFILEPATH = "./keyFile.key";
 
     @CrossOrigin
-    @RequestMapping(value = "/helloworld", method = RequestMethod.GET)
+    @RequestMapping(value = "/mobilepayment", method = RequestMethod.GET)
     public String printCryptTest() {
         AESUtils aesUtils = new AESUtils();
 
-        String encryptedStr = aesUtils.encrypt("Hello World!", KEYFILEPATH);
+        String encryptedStr = aesUtils.encrypt("Mobile Payment!", KEYFILEPATH);
         return ("Decrypt = " + aesUtils.decrypt(encryptedStr, KEYFILEPATH));
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/printAllUsers", method = RequestMethod.GET)
-    public String printAllUsers() {
+    @RequestMapping(value = "/listAllTrans", method = RequestMethod.GET)
+    public String listAllTrans() {
         JdbcTemplate jdbcTemplate = JDBCConnector.getJdbcTemplate();
         StringBuilder resultStr = new StringBuilder();
 
-        String queryStr = "SELECT * from user_info;";
+        String queryStr = "SELECT * from trans_info;";
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(queryStr);
         while (sqlRowSet.next()) {
-            resultStr.append(sqlRowSet.getString("user_id")).append(", ")
+            resultStr.append(sqlRowSet.getString("trans_id")).append(", ")
                     .append(sqlRowSet.getString("first_name")).append(", ")
                     .append(sqlRowSet.getString("last_name")).append(", ")
-                    .append(sqlRowSet.getString("addr")).append(", ")
-                    .append(sqlRowSet.getString("phone")).append(", ")
-                    .append(sqlRowSet.getString("email")).append(", ")
+                    .append(sqlRowSet.getString("pos_location")).append(", ")
+                    .append(sqlRowSet.getString("issuer_bank")).append(", ")
+                    .append(sqlRowSet.getString("price")).append(", ")
                     .append(sqlRowSet.getString("created_at"))
                     .append("\n");
         }
-        return ("SELECT * from user_info:\n" + resultStr);
+        return ("SELECT * from trans_info:\n" + resultStr);
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public String addUser(@RequestBody AddUserData addUserData) {
+    @RequestMapping(value = "/addTran", method = RequestMethod.POST)
+    public String addTran(@RequestBody AddTranData addTranData) {
         JdbcTemplate jdbcTemplate = JDBCConnector.getJdbcTemplate();
-        String queryStr = "INSERT INTO user_info (first_name, last_name, addr, email) " +
+        String queryStr = "INSERT INTO trans_info (first_name, last_name, pos_location, issuer_bank, price) " +
                 "VALUES (" +
-                "'" + addUserData.getFirstName() + "'," +
-                "'" + addUserData.getLastName() + "'," +
-                "'" + addUserData.getAddress() + "'," +
-                "'" + addUserData.getEmail() + "'" +
+                "'" + addTranData.getFirstName() + "'," +
+                "'" + addTranData.getLastName() + "'," +
+                "'" + addTranData.getPosLocation() + "'," +
+                "'" + addTranData.getIssuerBank() + "'," +
+                "'" + addTranData.getPrice() + "'" +
                 ");";
         int rowsUpdated = jdbcTemplate.update(queryStr);
         return ("Rows updated: " + rowsUpdated);
@@ -63,7 +64,7 @@ public class JDBCController {
         String queryStr = "SELECT * from acct_info;";
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(queryStr);
         while (sqlRowSet.next()) {
-            resultStr.append(sqlRowSet.getString("user_id")).append(", ")
+            resultStr.append(sqlRowSet.getString("trans_id")).append(", ")
                     .append(sqlRowSet.getString("acct_num")).append(", ")
                     .append(sqlRowSet.getString("balance"))
                     .append("\n");
